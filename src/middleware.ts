@@ -42,22 +42,18 @@ export async function middleware(request: NextRequest) {
     const res = await fetch(new URL("/api/maintenance", request.url), {
       cache: "no-store",
     });
-    if (!res.ok) {
-      console.error("Maintenance check failed:", res.status, res.statusText);
-      return NextResponse.next();
-    }
-    const contentType = res.headers.get("content-type") || "";
-    if (!contentType.includes("application/json")) {
-      console.error("Maintenance check: non-JSON response", contentType);
-      return NextResponse.next();
-    }
-    const data = await res.json();
 
-    if (data.maintenance_mode) {
-      return NextResponse.redirect(new URL("/maintenance", request.url));
+    if (res.ok) {
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const data = await res.json();
+        if (data.maintenance_mode) {
+          return NextResponse.redirect(new URL("/maintenance", request.url));
+        }
+      }
     }
-  } catch (error) {
-    console.error("Maintenance check failed:", error);
+  } catch {
+    // Fallback: assume maintenance mode is off
   }
 
   return NextResponse.next();
