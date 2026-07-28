@@ -71,16 +71,18 @@ function ProductCard({ product }: { product: Product }) {
 
   return (
     <div
-      className="group relative"
+      className="group relative bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative aspect-[3/4] bg-[#EFEAE4] overflow-hidden mb-3">
-        <img
-          src={firstImage}
-          alt={product.nameAr || product.name}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
+      <div className="relative aspect-[3/4] bg-[#EFEAE4] overflow-hidden">
+        <Link href={`/store/products/${product.slug}`}>
+          <img
+            src={firstImage}
+            alt={product.nameAr || product.name}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        </Link>
         <button className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white">
           <Heart size={15} strokeWidth={1.5} className="text-gray-600" />
         </button>
@@ -105,27 +107,27 @@ function ProductCard({ product }: { product: Product }) {
           </div>
         )}
       </div>
-      <div className="space-y-1.5">
-        <p className="text-[10px] tracking-[0.15em] text-gray-400 uppercase">
+      <div className="flex flex-col text-left p-4 gap-1.5">
+        <span className="text-xs text-gray-500 uppercase tracking-widest">
           {product.category?.nameAr || product.category?.name || ""}
-        </p>
+        </span>
         <Link href={`/store/products/${product.slug}`}>
-          <h3 className="text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors line-clamp-1">
+          <h3 className="text-sm font-medium text-gray-900 truncate" dir="auto">
             {product.nameAr || product.name}
           </h3>
         </Link>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-black">
+        <div className="flex items-center gap-2 mt-1">
+          <span className="text-lg font-bold text-gray-900">
             {formatPrice(product.price)}
           </span>
           {product.comparePrice && product.comparePrice > product.price && (
-            <span className="text-xs text-gray-400 line-through">
+            <span className="text-sm text-gray-400 line-through">
               {formatPrice(product.comparePrice)}
             </span>
           )}
         </div>
         {uniqueSizes.length > 0 && (
-          <div className="flex items-center gap-1 pt-1">
+          <div className="flex gap-2 pt-1">
             {uniqueSizes.map((size) => (
               <button
                 key={size}

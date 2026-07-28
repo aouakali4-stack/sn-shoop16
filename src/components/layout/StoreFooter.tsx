@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import NewsletterForm from "@/components/NewsletterForm";
 
 interface SiteSettings {
   phone: string;
@@ -62,16 +63,7 @@ export default function StoreFooter() {
                 À notre newsletter
               </p>
             </div>
-            <div className="flex w-full md:w-auto">
-              <input
-                type="email"
-                placeholder="Votre adresse e-mail"
-                className="flex-1 md:w-72 px-5 py-3 bg-white/10 border border-white/20 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-white/40 transition-colors"
-              />
-              <button className="px-8 py-3 bg-white text-black text-xs tracking-[0.2em] font-semibold hover:bg-gray-200 transition-colors">
-                S&apos;INSCRIRE
-              </button>
-            </div>
+            <NewsletterForm dark />
           </div>
         </div>
       </div>
