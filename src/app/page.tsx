@@ -31,6 +31,12 @@ interface Category {
   _count?: { products: number };
 }
 
+interface ActiveCoupon {
+  code: string;
+  discount: number;
+  isPercentage: boolean;
+}
+
 const FALLBACK_IMAGES = [
   "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&auto=format&fit=crop",
@@ -174,14 +180,16 @@ export default function HomePage() {
     heroSubtitle: "Découvrez les dernières tendances à des prix irrésistibles",
     heroImageUrl: "",
   });
+  const [activeCoupon, setActiveCoupon] = useState<ActiveCoupon | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [prodRes, catRes, settingsRes] = await Promise.allSettled([
+        const [prodRes, catRes, settingsRes, couponRes] = await Promise.allSettled([
           fetch("/api/store/products"),
           fetch("/api/store/categories"),
           fetch("/api/store/settings"),
+          fetch("/api/coupons/active"),
         ]);
 
         if (prodRes.status === "fulfilled" && prodRes.value.ok) {
@@ -213,6 +221,15 @@ export default function HomePage() {
               });
             }
           } catch {}
+        }
+
+        if (couponRes.status === "fulfilled" && couponRes.value.ok) {
+          try {
+            const cData = await couponRes.value.json();
+            setActiveCoupon(cData.coupon || null);
+          } catch { setActiveCoupon(null); }
+        } else {
+          setActiveCoupon(null);
         }
       } catch (err) {
         console.error("Failed to fetch data:", err);
@@ -408,28 +425,33 @@ export default function HomePage() {
       </section>
 
       {/* ── PROMO BANNER ── */}
-      <section className="py-16 md:py-24 relative overflow-hidden bg-black text-white">
-        <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
-          <p className="text-xs tracking-[0.3em] text-gray-400 uppercase mb-4">Offre spéciale</p>
-          <h2
-            className="text-4xl md:text-6xl font-light mb-4"
-            style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
-          >
-            -10% SUR VOTRE
-            <br />
-            <span className="italic">PREMIÈRE COMMANDE</span>
-          </h2>
-          <p className="text-sm text-gray-400 mb-8 max-w-md mx-auto">
-            Inscrivez-vous à notre newsletter et recevez immédiatement votre code promo.
-          </p>
-          <Link
-            href="/store/category/nouveautes"
-            className="inline-block bg-white text-black text-xs tracking-[0.25em] font-semibold px-10 py-4 hover:bg-gray-200 transition-colors"
-          >
-            DÉCOUVRIR
-          </Link>
-        </div>
-      </section>
+      {activeCoupon && (
+        <section className="py-16 md:py-24 relative overflow-hidden bg-black text-white">
+          <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
+            <p className="text-xs tracking-[0.3em] text-gray-400 uppercase mb-4">Offre spéciale</p>
+            <h2
+              className="text-4xl md:text-6xl font-light mb-4"
+              style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
+            >
+              {activeCoupon.isPercentage
+                ? `-${activeCoupon.discount}%`
+                : `-${activeCoupon.discount.toLocaleString("fr-DZ")} DA`}{" "}
+              SUR VOTRE
+              <br />
+              <span className="italic">PREMIÈRE COMMANDE</span>
+            </h2>
+            <p className="text-sm text-gray-400 mb-8 max-w-md mx-auto">
+              Utilisez le code <span className="font-bold text-white tracking-wider">{activeCoupon.code}</span> lors de votre commande.
+            </p>
+            <Link
+              href="/store/category/nouveautes"
+              className="inline-block bg-white text-black text-xs tracking-[0.25em] font-semibold px-10 py-4 hover:bg-gray-200 transition-colors"
+            >
+              DÉCOUVRIR
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* ── NEWSLETTER (inline before footer) ── */}
       <section className="py-16 bg-nude">
