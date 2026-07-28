@@ -50,6 +50,10 @@ export default function ProductPage() {
       .catch(() => setLoading(false));
   }, [slug]);
 
+  const validImages = (product?.images || []).filter(
+    (img: any) => img?.url && typeof img.url === "string" && img.url.startsWith("http")
+  );
+
   useEffect(() => {
     if (!product?.id) return;
     fetch(`/api/reviews?productId=${product.id}`)
@@ -213,11 +217,11 @@ export default function ProductPage() {
         {/* Images */}
         <div className="space-y-4">
           <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#EFEAE4] group">
-            {product?.images && product.images.length > 0 && product.images[activeImage] ? (
+            {validImages.length > 0 ? (
               <>
                 <img
-                  src={product.images[activeImage].url}
-                  alt={product.images[activeImage].alt || product.nameAr || product.name || ""}
+                  src={validImages[activeImage]?.url || validImages[0].url}
+                  alt={validImages[activeImage]?.alt || product.nameAr || product.name || ""}
                   className="h-full w-full object-cover transition-all duration-300"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
@@ -243,17 +247,17 @@ export default function ProductPage() {
                 -{Math.round(((rawCompare - price) / rawCompare) * 100)}%
               </div>
             )}
-            {product?.images && product.images.length > 1 && (
+            {validImages.length > 1 && (
               <>
                 <button
-                  onClick={() => setActiveImage((prev) => (prev - 1 + product.images.length) % product.images.length)}
+                  onClick={() => setActiveImage((prev) => (prev - 1 + validImages.length) % validImages.length)}
                   className="absolute left-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-black shadow-md backdrop-blur-sm opacity-90 transition-all hover:bg-white hover:scale-110 active:scale-95 z-10"
                   aria-label="Image précédente"
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </button>
                 <button
-                  onClick={() => setActiveImage((prev) => (prev + 1) % product.images.length)}
+                  onClick={() => setActiveImage((prev) => (prev + 1) % validImages.length)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-black shadow-md backdrop-blur-sm opacity-90 transition-all hover:bg-white hover:scale-110 active:scale-95 z-10"
                   aria-label="Image suivante"
                 >
@@ -263,9 +267,9 @@ export default function ProductPage() {
             )}
           </div>
 
-          {product?.images && product.images.length > 1 && (
+          {validImages.length > 1 && (
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
-              {product.images.map((img, idx) => (
+              {validImages.map((img, idx) => (
                 <button
                   key={img.id}
                   onClick={() => setActiveImage(idx)}

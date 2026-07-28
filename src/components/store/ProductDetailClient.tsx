@@ -87,6 +87,10 @@ export default function ProductDetailClient({ product }: { product: SerializedPr
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [localReviews, setLocalReviews] = useState<Review[]>(product.reviews || []);
 
+  const validImages = (product.images || []).filter(
+    (img) => img?.url && typeof img.url === "string" && img.url.startsWith("http")
+  );
+
   const variants = product.variants || [];
 
   const uniqueSizes = [...new Set(variants.map((v) => v.size).filter(Boolean))];
@@ -133,7 +137,7 @@ export default function ProductDetailClient({ product }: { product: SerializedPr
       name: product.name,
       nameAr: product.nameAr,
       price,
-      image: product.images[0]?.url || "/placeholder.png",
+      image: validImages[0]?.url || "/placeholder.png",
       size: selectedSize || "ONE_SIZE",
       color: selectedColor || "default",
       colorHex: selectedVariant?.colorHex || undefined,
@@ -196,11 +200,11 @@ export default function ProductDetailClient({ product }: { product: SerializedPr
         <div className="space-y-3 sm:space-y-4">
           {/* Main Image */}
           <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl sm:rounded-2xl bg-[#EFEAE4] group">
-            {product.images.length > 0 ? (
+            {validImages.length > 0 ? (
               <>
                 <img
-                  src={product.images[activeImage]?.url || product.images[0].url}
-                  alt={product.images[activeImage]?.alt || product.nameAr || product.name}
+                  src={validImages[activeImage]?.url || validImages[0].url}
+                  alt={validImages[activeImage]?.alt || product.nameAr || product.name}
                   className="h-full w-full object-cover transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
@@ -223,17 +227,17 @@ export default function ProductDetailClient({ product }: { product: SerializedPr
               </div>
             )}
 
-            {product.images.length > 1 && (
+            {validImages.length > 1 && (
               <>
                 <button
-                  onClick={() => setActiveImage((prev) => (prev - 1 + product.images.length) % product.images.length)}
+                  onClick={() => setActiveImage((prev) => (prev - 1 + validImages.length) % validImages.length)}
                   className="absolute left-2 top-1/2 -translate-y-1/2 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/80 text-black shadow-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:scale-110 active:scale-95 z-10"
                   aria-label="Image précédente"
                 >
                   <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                 </button>
                 <button
-                  onClick={() => setActiveImage((prev) => (prev + 1) % product.images.length)}
+                  onClick={() => setActiveImage((prev) => (prev + 1) % validImages.length)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/80 text-black shadow-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:scale-110 active:scale-95 z-10"
                   aria-label="Image suivante"
                 >
@@ -244,9 +248,9 @@ export default function ProductDetailClient({ product }: { product: SerializedPr
           </div>
 
           {/* Thumbnails */}
-          {product.images.length > 1 && (
+          {validImages.length > 1 && (
             <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-none">
-              {product.images.map((img, idx) => (
+              {validImages.map((img, idx) => (
                 <button
                   key={img.id}
                   onClick={() => setActiveImage(idx)}
