@@ -1,8 +1,10 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  noStore();
   try {
     const coupon = await prisma.coupon.findFirst({
       where: { isActive: true },

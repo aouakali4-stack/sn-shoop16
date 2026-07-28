@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
@@ -34,6 +35,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    revalidatePath("/");
+
     return NextResponse.json({ coupon }, { status: 201 });
   } catch (error: any) {
     console.error("Create coupon error:", error);
@@ -51,6 +54,9 @@ export async function DELETE(req: NextRequest) {
     }
 
     await prisma.coupon.delete({ where: { id } });
+
+    revalidatePath("/");
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("Delete coupon error:", error);
