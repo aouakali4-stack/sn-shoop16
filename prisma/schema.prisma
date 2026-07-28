@@ -1,0 +1,206 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  name      String   @default("Admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  nameAr      String
+  slug        String    @unique
+  description String?
+  image       String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  nameAr      String
+  slug        String   @unique
+  description String?
+  price       Float
+  comparePrice Float?
+  stock       Int      @default(0)
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  images      ProductImage[]
+  variants    ProductVariant[]
+  reviews     Review[]
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  salesCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ProductImage {
+  id        String  @id @default(uuid())
+  url       String
+  alt       String?
+  sortOrder Int     @default(0)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductVariant {
+  id        String  @id @default(uuid())
+  size      String
+  color     String
+  colorHex  String?
+  stock     Int     @default(0)
+  price     Float?
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, size, color])
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  customerName    String
+  phoneNumber     String
+  wilaya          String
+  commune         String
+  deliveryType    String      @default("home")
+  address         String?
+  shippingCost    Float       @default(0)
+  subtotal        Float
+  total           Float
+  status          String      @default("new")
+  paymentMethod   String      @default("cod")
+  notes           String?
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  price     Float
+  size      String
+  color     String
+  productName String
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+}
+
+model ShippingRate {
+  id             String @id @default(uuid())
+  wilayaCode     String @unique
+  wilayaName     String
+  homePrice      Float  @default(500)
+  officePrice    Float  @default(400)
+}
+
+model StoreSettings {
+  id          String @id @default(uuid())
+  key         String @unique
+  value       String
+  updatedAt   DateTime @updatedAt
+}
+
+model Banner {
+  id        String  @id @default(uuid())
+  title     String
+  titleAr   String?
+  subtitle  String?
+  image     String
+  link      String?
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSetting {
+  id               String   @id @default("global")
+  siteName         String   @default("Sn Shop16")
+  siteDescription  String?
+  announcementText String?  @default("-10% SUR VOTRE PREMIÈRE COMMANDE")
+  heroTitle        String?  @default("NEW COLLECTION 2026")
+  heroSubtitle     String?  @default("Découvrez les dernières tendances à des prix irrésistibles")
+  heroImageUrl     String?
+  phone            String?  @default("+213 656 12 34 56")
+  email            String?  @default("contact@snshop.dz")
+  whatsappNumber   String?
+  instagramUrl     String?
+  facebookUrl      String?
+  tiktokUrl        String?
+  metaPixelId      String?
+  tiktokPixelId    String?
+  maintenanceMode  Boolean  @default(false)
+  updatedAt        DateTime @updatedAt
+}
+
+model ChatConversation {
+  id        String        @id @default(uuid())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  messages  ChatMessage[]
+}
+
+model ChatMessage {
+  id              String          @id @default(uuid())
+  conversationId  String
+  conversation    ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender          String
+  text            String
+  createdAt       DateTime        @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  userMessage String
+  botReply  String
+  createdAt DateTime @default(now())
+}
+
+model Complaint {
+  id String @id @default(cuid())
+  customerName String
+  phone String
+  subject String
+  message String
+  status String @default("جديدة")
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id String @id @default(cuid())
+  productId String
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userName String
+  rating Int
+  comment String
+  createdAt DateTime @default(now())
+}
+
+model Coupon {
+  id String @id @default(cuid())
+  code String @unique
+  discount Float
+  isPercentage Boolean @default(false)
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+}
