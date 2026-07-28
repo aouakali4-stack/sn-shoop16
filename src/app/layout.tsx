@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { prisma } from "@/lib/prisma";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -73,6 +74,7 @@ export default async function RootLayout({
         )}
       </head>
       <body className="min-h-full flex flex-col bg-gray-50">
+        <AnnouncementBar />
         {children}
       </body>
     </html>

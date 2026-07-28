@@ -6,8 +6,6 @@ import { formatPrice } from "@/lib/utils";
 import { ALGERIA_WILAYAS, DELIVERY_TYPES } from "@/constants/algeriaWilayas";
 import Image from "next/image";
 import Link from "next/link";
-import StoreHeader from "@/components/layout/StoreHeader";
-import StoreFooter from "@/components/layout/StoreFooter";
 
 export default function CheckoutPage() {
   const items = useCartStore((s) => s.items);

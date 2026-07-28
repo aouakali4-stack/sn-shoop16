@@ -19,16 +19,19 @@ import {
   Image,
 } from "lucide-react";
 
-const getImageUrl = (product: any) => {
-  if (!product) return "/placeholder.png";
-  if (Array.isArray(product.images) && product.images.length > 0) {
-    const firstImg = product.images[0];
-    return typeof firstImg === "string" ? firstImg : firstImg?.url || "/placeholder.png";
+const isValidUrl = (url: any): url is string =>
+  typeof url === "string" && url.startsWith("http");
+
+const getImageUrl = (product: any): string => {
+  if (!product) return "/placeholder.svg";
+  if (Array.isArray(product.images)) {
+    for (const img of product.images) {
+      const url = typeof img === "string" ? img : img?.url;
+      if (isValidUrl(url)) return url;
+    }
   }
-  if (typeof product.image === "string" && product.image) {
-    return product.image;
-  }
-  return "/placeholder.png";
+  if (isValidUrl(product.image)) return product.image;
+  return "/placeholder.svg";
 };
 
 interface ProductImage {
@@ -207,6 +210,9 @@ export default function AdminProductsPage() {
                               src={getImageUrl(product)}
                               alt={product.nameAr}
                               className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = "/placeholder.svg";
+                              }}
                             />
                           </div>
                           <div>

@@ -154,7 +154,7 @@ export default function ProductPage() {
       name: product.name,
       nameAr: product.nameAr,
       price: price,
-      image: product?.images && product.images.length > 0 ? product.images[0].url : "/placeholder.png",
+      image: validImages[0]?.url || "/placeholder.svg",
       size: selectedSize,
       color: selectedColor,
       colorHex: selectedVariant?.colorHex || undefined,

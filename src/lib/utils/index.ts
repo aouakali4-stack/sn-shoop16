@@ -48,3 +48,20 @@ export function truncate(str: string, length: number): string {
   if (str.length <= length) return str;
   return str.slice(0, length) + "...";
 }
+
+export const PLACEHOLDER_IMAGE = "/placeholder.svg";
+
+export function getProductImageUrl(
+  images?: { url?: string | null }[] | null,
+  fallback?: string
+): string {
+  if (Array.isArray(images)) {
+    for (const img of images) {
+      const url = img?.url;
+      if (url && typeof url === "string" && url.startsWith("http")) {
+        return url;
+      }
+    }
+  }
+  return fallback || PLACEHOLDER_IMAGE;
+}

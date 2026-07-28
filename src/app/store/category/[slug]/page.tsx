@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Heart, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/hooks/use-cart";
+import { getProductImageUrl } from "@/lib/utils";
 
 interface ProductImage {
   url: string;
@@ -45,9 +46,7 @@ function ProductCard({ product }: { product: Product }) {
   const uniqueSizes = Array.isArray(product?.variants)
     ? [...new Set(product.variants.map((v) => v.size).filter(Boolean))]
     : [];
-  const firstImage =
-    (Array.isArray(product?.images) && product.images[0]?.url) ||
-    "/placeholder.png";
+  const firstImage = getProductImageUrl(product?.images);
 
   const handleAddToCart = () => {
     const size = selectedSize || uniqueSizes[0] || "M";

@@ -93,7 +93,7 @@ export default function CartDrawer() {
                   {/* Thumbnail */}
                   <div className="w-20 h-24 flex-shrink-0 overflow-hidden bg-[#EFEAE4] rounded-lg">
                     <img
-                      src={item.image || "/placeholder.png"}
+                      src={item.image || "/placeholder.svg"}
                       alt={item.name}
                       className="w-full h-full object-cover"
                     />

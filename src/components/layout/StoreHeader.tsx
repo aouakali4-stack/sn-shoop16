@@ -7,35 +7,19 @@ import { ShoppingBag, Search, Menu, X } from "lucide-react";
 import { useCartStore } from "@/hooks/use-cart";
 import CartDrawer from "@/components/CartDrawer";
 
-interface SiteSettings {
+interface NavItem {
+  href: string;
+  label: string;
+}
+
+interface StoreHeaderProps {
+  navLinks: NavItem[];
   siteName: string;
-  announcementText: string;
 }
 
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-function AnnouncementBar({ text }: { text: string }) {
-  return (
-    <div className="bg-black text-white text-xs tracking-widest uppercase">
-      <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-9">
-        <span className="hidden sm:block font-light">Livraison dans toute l&apos;Algérie</span>
-        <span className="hidden md:block font-medium">{text || "-10% SUR VOTRE PREMIÈRE COMMANDE"}</span>
-        <span className="hidden sm:block font-light">Suivi de commande</span>
-        <span className="sm:hidden text-center w-full font-medium">{text || "-10% SUR VOTRE 1ÈRE COMMANDE"}</span>
-      </div>
-    </div>
-  );
-}
-
-export default function StoreHeader() {
+export default function StoreHeader({ navLinks, siteName }: StoreHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [settings, setSettings] = useState<SiteSettings>({ siteName: "SN SHOP", announcementText: "" });
-  const [categories, setCategories] = useState<Category[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchRef = useRef<HTMLDivElement>(null);
@@ -46,26 +30,6 @@ export default function StoreHeader() {
 
   useEffect(() => {
     setIsMounted(true);
-
-    fetch("/api/store/settings")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.settings) {
-          setSettings({
-            siteName: data.settings.siteName || "SN SHOP",
-            announcementText: data.settings.announcementText || "",
-          });
-        }
-      })
-      .catch(() => {});
-
-    fetch("/api/categories")
-      .then((r) => r.json())
-      .then((data) => {
-        const cats = Array.isArray(data) ? data : [];
-        setCategories(cats);
-      })
-      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -95,22 +59,10 @@ export default function StoreHeader() {
     }
   };
 
-  const navLinks: { href: string; label: string; highlight?: boolean }[] = [
-    { href: "/", label: "ACCUEIL" },
-    ...categories.map((cat) => ({
-      href: `/store/category/${cat.slug}`,
-      label: cat.name,
-      highlight: cat.name === "PROMOTIONS",
-    })),
-    { href: "/contact", label: "CONTACT" },
-  ];
-
-  const displayName = settings.siteName?.toUpperCase() || "SN SHOP";
+  const displayName = siteName?.toUpperCase() || "SN SHOP";
 
   return (
     <>
-      <AnnouncementBar text={settings.announcementText} />
-
       <header className="sticky top-0 z-50 bg-white/97 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16 md:h-20">
@@ -171,18 +123,15 @@ export default function StoreHeader() {
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center justify-center gap-0 pb-3 -mt-1">
+          <nav className="hidden md:flex items-center justify-center gap-6 lg:gap-8 pb-3 -mt-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3 lg:px-4 py-1 text-[11px] lg:text-xs tracking-[0.15em] font-medium transition-colors
-                  ${link.highlight
-                    ? "text-rose-600 hover:text-rose-700"
-                    : "text-gray-700 hover:text-black"
-                  }`}
+                className="relative text-[11px] lg:text-xs tracking-[0.15em] font-medium text-gray-700 hover:text-black transition-colors group"
               >
                 {link.label}
+                <span className="absolute left-0 -bottom-1 h-px w-0 bg-black group-hover:w-full transition-all duration-300" />
               </Link>
             ))}
           </nav>
@@ -195,11 +144,7 @@ export default function StoreHeader() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`block py-2.5 text-sm tracking-[0.1em] font-medium transition-colors
-                    ${link.highlight
-                      ? "text-rose-600"
-                      : "text-gray-700 hover:text-black"
-                    }`}
+                  className="block py-2.5 text-sm tracking-[0.1em] font-medium text-gray-700 hover:text-black transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
                   {link.label}

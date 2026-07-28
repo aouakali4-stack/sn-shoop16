@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { Product } from "@/types";
+import { getProductImageUrl } from "@/lib/utils";
 
 interface RelatedProductsProps {
   currentProductId: string;
@@ -54,8 +55,7 @@ export default function RelatedProducts({ currentProductId, categoryId }: Relate
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {products.filter((rp) => rp.slug).map((rp) => {
           const rpPrice = typeof rp.price === "number" ? rp.price : 0;
-          const rpImage =
-            rp.images && rp.images.length > 0 ? rp.images[0].url : "/placeholder.png";
+          const rpImage = getProductImageUrl(rp.images);
           return (
             <Link
               key={rp.id}

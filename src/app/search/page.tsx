@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useCartStore } from "@/hooks/use-cart";
+import { getProductImageUrl } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
 
 function formatPrice(price: number): string {
@@ -54,7 +55,7 @@ function SearchResults() {
       name: product.name,
       nameAr: product.nameAr,
       price: product.price,
-      image: product.images[0]?.url || "/placeholder.png",
+      image: getProductImageUrl(product.images),
       size: variant.size,
       color: variant.color,
       stock: variant.stock,
@@ -97,7 +98,7 @@ function SearchResults() {
                 <div className="relative aspect-[3/4] overflow-hidden bg-[#EFEAE4] rounded-lg sm:rounded-xl mb-3">
                   <Link href={`/store/products/${product.slug}`}>
                     <img
-                      src={product.images[0]?.url || "/placeholder.png"}
+                      src={getProductImageUrl(product.images)}
                       alt={product.nameAr || product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />

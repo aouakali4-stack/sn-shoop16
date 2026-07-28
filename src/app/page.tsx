@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Heart, ShoppingBag, Truck, CreditCard, RotateCcw, Shield } from "lucide-react";
 import { useCartStore } from "@/hooks/use-cart";
+import { getProductImageUrl } from "@/lib/utils";
 import StoreHeader from "@/components/layout/StoreHeader";
 import StoreFooter from "@/components/layout/StoreFooter";
 import ChatWidget from "@/components/ChatWidget";
@@ -58,9 +59,10 @@ function ProductCard({ product }: { product: Product }) {
   const uniqueSizes = Array.isArray(product?.variants)
     ? [...new Set(product.variants.map((v: any) => v.size).filter(Boolean))]
     : [];
-  const firstImage = (Array.isArray(product?.images) && product.images[0]?.url)
-    || (product as any)?.image
-    || getFallbackImage(product?.id || "default");
+  const firstImage =
+    getProductImageUrl(product?.images) ||
+    (product as any)?.image ||
+    getFallbackImage(product?.id || "default");
 
   const handleAddToCart = () => {
     const size = selectedSize || uniqueSizes[0] || "M";
@@ -220,6 +222,15 @@ export default function HomePage() {
 
   const displayProducts = products.filter((p) => p.slug).slice(0, 8);
 
+  const navLinks = [
+    { href: "/", label: "ACCUEIL" },
+    ...categories.map((cat) => ({
+      href: `/store/category/${cat.slug}`,
+      label: (cat.name || "").toUpperCase(),
+    })),
+    { href: "/contact", label: "CONTACT" },
+  ];
+
   const categoryDisplay = [
     { name: "Robes", slug: "fasatin", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&auto=format&fit=crop" },
     { name: "Hauts", slug: "casual", image: "https://images.unsplash.com/photo-1551163943-3f6a855d1153?w=500&auto=format&fit=crop" },
@@ -232,50 +243,56 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <StoreHeader />
+      <StoreHeader navLinks={navLinks} siteName="SN SHOP" />
       <main className="flex-1">
 
       {/* ── HERO BANNER ── */}
-      <section className="bg-beige relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 py-12 md:py-0 min-h-[500px] md:min-h-[600px] flex items-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center w-full">
-            {/* Text */}
-            <div className="text-center md:text-left z-10 order-2 md:order-1">
-              <p className="animate-text delay-1 text-xs tracking-[0.3em] text-gray-500 uppercase mb-4">
-                Collection Printemps-Été
-              </p>
-              <h1
-                className="animate-text delay-2 text-5xl md:text-7xl lg:text-8xl font-light text-black leading-[0.9] mb-6"
-                style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
-              >
-                {(heroSettings.heroTitle || "NEW COLLECTION 2026").split("\n").map((line, i) => (
-                  <span key={i}>{line}{i < (heroSettings.heroTitle || "").split("\n").length - 1 && <br />}</span>
-                )) || (
-                  <>
-                    NEW<br />COLLECTION<br /><span className="italic font-light">2026</span>
-                  </>
-                )}
-              </h1>
-              <p className="animate-text delay-3 text-sm md:text-base text-gray-600 mb-8 max-w-md mx-auto md:mx-0 leading-relaxed">
-                {heroSettings.heroSubtitle || "Découvrez les dernières tendances à des prix irrésistibles."}
-              </p>
-              <Link
-                href="/store/category/nouveautes"
-                className="animate-text delay-3 inline-block bg-black text-white text-xs tracking-[0.25em] font-semibold px-10 py-4 hover:bg-gray-800 transition-colors"
-              >
-                SHOP NOW
-              </Link>
-            </div>
-            {/* Image */}
-            <div className="order-1 md:order-2 relative">
-              <div className="aspect-[3/4] bg-[#EFEAE4] relative overflow-hidden mx-auto max-w-md">
-                <img
-                  src={heroSettings.heroImageUrl || "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1000&auto=format&fit=crop"}
-                  alt="New Collection 2026"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
+      <section className="relative w-full h-[85vh] min-h-[600px] max-h-[900px] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src={heroSettings.heroImageUrl || "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1600&auto=format&fit=crop"}
+            alt="New Collection 2026"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Dark Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
+
+        {/* Text Overlay */}
+        <div className="relative z-10 text-center px-4 max-w-3xl mx-auto">
+          <p className="animate-text delay-1 text-xs sm:text-sm tracking-[0.35em] text-white/70 uppercase mb-4 sm:mb-6 font-medium">
+            Collection Printemps-Été
+          </p>
+          <h1
+            className="animate-text delay-2 text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light text-white leading-[0.85] mb-5 sm:mb-7"
+            style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
+          >
+            {(heroSettings.heroTitle || "NEW COLLECTION 26").split("\n").map((line, i) => (
+              <span key={i}>{line}{i < (heroSettings.heroTitle || "").split("\n").length - 1 && <br />}</span>
+            )) || (
+              <>
+                NEW<br />COLLECTION<br /><span className="italic font-light">26</span>
+              </>
+            )}
+          </h1>
+          <p className="animate-text delay-3 text-sm sm:text-base md:text-lg text-white/80 mb-7 sm:mb-9 max-w-lg mx-auto leading-relaxed font-light">
+            {heroSettings.heroSubtitle || "Découvrez nos dernières tendances"}
+          </p>
+          <div className="animate-text delay-3 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <Link
+              href="#products"
+              className="inline-block bg-white text-black text-xs sm:text-sm tracking-[0.25em] font-semibold px-10 sm:px-14 py-4 sm:py-4.5 hover:bg-gray-100 transition-colors duration-300"
+            >
+              SHOP NOW
+            </Link>
+            <Link
+              href="#products"
+              className="inline-block border border-white/50 text-white text-xs sm:text-sm tracking-[0.25em] font-medium px-10 sm:px-14 py-4 sm:py-4.5 hover:bg-white/10 transition-colors duration-300"
+            >
+              DÉCOUVRIR
+            </Link>
           </div>
         </div>
       </section>
@@ -340,7 +357,7 @@ export default function HomePage() {
       </section>
 
       {/* ── NEW PRODUCTS ── */}
-      <section className="py-16 md:py-20 bg-beige-light">
+      <section id="products" className="py-16 md:py-20 bg-beige-light">
         <div className="max-w-7xl mx-auto px-4">
           {/* Section header */}
           <div className="flex items-center justify-between mb-10">

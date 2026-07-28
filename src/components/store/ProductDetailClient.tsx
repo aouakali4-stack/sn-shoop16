@@ -137,7 +137,7 @@ export default function ProductDetailClient({ product }: { product: SerializedPr
       name: product.name,
       nameAr: product.nameAr,
       price,
-      image: validImages[0]?.url || "/placeholder.png",
+      image: validImages[0]?.url || "/placeholder.svg",
       size: selectedSize || "ONE_SIZE",
       color: selectedColor || "default",
       colorHex: selectedVariant?.colorHex || undefined,
