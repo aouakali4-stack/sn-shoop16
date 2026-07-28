@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest) {
         tiktokUrl: body.tiktokUrl || null,
         metaPixelId: body.metaPixelId || null,
         tiktokPixelId: body.tiktokPixelId || null,
-        maintenanceMode: body.maintenanceMode ?? false,
+        maintenanceMode: body.maintenanceMode === "true" || body.maintenanceMode === true,
       },
       create: {
         id: "global",
@@ -65,7 +65,7 @@ export async function PUT(request: NextRequest) {
         tiktokUrl: body.tiktokUrl || null,
         metaPixelId: body.metaPixelId || null,
         tiktokPixelId: body.tiktokPixelId || null,
-        maintenanceMode: body.maintenanceMode ?? false,
+        maintenanceMode: body.maintenanceMode === "true" || body.maintenanceMode === true,
       },
     });
 
